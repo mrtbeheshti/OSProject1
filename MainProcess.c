@@ -9,9 +9,11 @@
 const int MAX_STRING_LENGTH = 100;
 const int MAX_LINES = 20;
 
-int isSeparator(char str[][MAX_STRING_LENGTH])
+int isSeparator(char str[])
 {
-    return 1;
+    if (!strcmp("###\n", str))
+        return 1;
+    return 0;
 }
 int main()
 {
@@ -20,11 +22,12 @@ int main()
     char inputText[MAX_LINES][MAX_STRING_LENGTH];
     int lines;
 
-    char *parent_decoder = "parent_decoder.unp";
-    char *parent_finder = "parent_finder.unp";
-    char *parent_placer = "parent_placer.unp";
-    char *decoder_finder = "decoder_finder.unp";
-    char *finder_placer = "finder_placer.unp";
+    int p2d, p2f, p2p;
+    char *parent_decoder = "parent_decoder.txt";
+    char *parent_finder = "parent_finder.txt";
+    char *parent_placer = "parent_placer.txt";
+    char *decoder_finder = "decoder_finder.txt";
+    char *finder_placer = "finder_placer.txt";
 
     char *decoder_args[] = {"./decoder", NULL};
     char *finder_args[] = {"./finder", NULL};
@@ -34,7 +37,7 @@ int main()
     input_file = fopen("./codedText.txt", "r");
     if (!input_file)
     {
-        printf("can't find input file");
+        perror("can't find input file");
         exit(EXIT_FAILURE);
     }
     for (lines = 0; !feof(input_file); lines++)
@@ -73,27 +76,46 @@ int main()
     //---- main process ----//
     if (decoder_id && finder_id && placer_id)
     {
-        int part = 0;
-        for (int i=0;i<=lines;i++)
+
+        //---- make pipes ----//
+        mkfifo(parent_decoder, 0666);
+        mkfifo(parent_finder, 0666);
+        mkfifo(parent_placer, 0666);
+
+        //------------------------//
+        //---- write in pipes ----//
+        //------------------------//
+
+        int i;
+        char buffer[MAX_STRING_LENGTH * MAX_LINES / 2];
+
+        //---- write in parent-decoder pipe ----//
+        buffer[0] = '\0';
+        for (i = 0; !isSeparator(inputText[i]); i++)
         {
-            //---- making pipes ----//
+            inputText[i][strlen(inputText[i]) - 1] = '\0';
+            strcat(buffer, inputText[i]);
+        }
+        inputText[i][strlen(inputText[i]) - 1] = '\0';
+        p2d = open(parent_decoder, O_WRONLY);
+        write(p2d, buffer, strlen(buffer) + 1);
+        close(p2d);
 
-            //---- parent - decoder pipe ----//
-            mkfifo(parent_decoder, 0666);
-            if (isSeparator(inputText))
-                part++;
-            else
-            {
-                switch (part)
-                {
-                case 0:
+        //---- write in parent-finder pipe ----//
+        buffer[0] = '\0';
+        for (i++; !isSeparator(inputText[i]); i++)
+        {
+            p2f = open(parent_finder, O_WRONLY);
+            write(p2f, inputText[i], strlen(inputText[i]) + 1);
+            close(p2f);
+        }
 
-                case 1:
-                    break;
-                case 2:
-                    break;
-                }
-            }
+        //---- write in parent-placer pipe ----//
+        for (i++; i <= lines; i++)
+        {
+            p2p = open(parent_placer, O_WRONLY);
+            write(p2p, inputText[i], strlen(inputText[i]) + 1);
+            close(p2p);
         }
     }
 }
