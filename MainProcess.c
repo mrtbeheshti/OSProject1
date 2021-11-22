@@ -69,7 +69,7 @@ int main()
     if (decoder_id && finder_id && placer_id)
     {
 
-        //---- make pipes ----//
+        //---- create pipes ----//
         mkfifo(parent_decoder, 0666);
         mkfifo(parent_finder, 0666);
         mkfifo(parent_placer, 0666);
