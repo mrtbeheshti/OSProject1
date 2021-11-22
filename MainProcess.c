@@ -1,13 +1,10 @@
+#include "consts.h"
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
-
-const int MAX_STRING_LENGTH = 100;
-const int MAX_LINES = 20;
 
 int isSeparator(char str[])
 {
@@ -23,15 +20,10 @@ int main()
     int lines;
 
     int p2d, p2f, p2p;
-    char *parent_decoder = "parent_decoder.txt";
-    char *parent_finder = "parent_finder.txt";
-    char *parent_placer = "parent_placer.txt";
-    char *decoder_finder = "decoder_finder.txt";
-    char *finder_placer = "finder_placer.txt";
 
-    char *decoder_args[] = {"./decoder", NULL};
-    char *finder_args[] = {"./finder", NULL};
-    char *placer_args[] = {"./placer", NULL};
+    const char *decoder_args[] = {"./decoder", NULL};
+    const char *finder_args[] = {"./finder", NULL};
+    const char *placer_args[] = {"./placer", NULL};
 
     //---- read input file ----//
     input_file = fopen("./codedText.txt", "r");
