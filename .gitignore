@@ -1,0 +1,22 @@
+# Executing Files #
+###################
+
+decoder
+finder
+MainProcess
+placer
+
+# pipe Files #
+##############
+
+*.txt
+
+# output File #
+###############
+
+OS_p1.zip
+
+# vscode Folder #
+#################
+
+.vscode/
