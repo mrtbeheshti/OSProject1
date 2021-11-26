@@ -21,9 +21,9 @@ int main()
 
     int p2d, p2f, p2p;
 
-    const char *decoder_args[] = {"./decoder", NULL};
-    const char *finder_args[] = {"./finder", NULL};
-    const char *placer_args[] = {"./placer", NULL};
+    char *decoder_args[] = {"./decoder", NULL};
+    char *finder_args[] = {"./finder", NULL};
+    char *placer_args[] = {"./placer", NULL};
 
     //---- read input file ----//
     input_file = fopen("./codedText.txt", "r");
@@ -94,20 +94,20 @@ int main()
         close(p2d);
 
         //---- write in parent-finder pipe ----//
-        buffer[0] = '\0';
-        for (i++; !isSeparator(inputText[i]); i++)
-        {
-            p2f = open(parent_finder, O_WRONLY);
-            write(p2f, inputText[i], strlen(inputText[i]) + 1);
-            close(p2f);
-        }
+        i++;
+        p2f = open(parent_finder, O_WRONLY);
+        write(p2f, inputText[i], strlen(inputText[i]) + 1);
+        close(p2f);
+        i++;
 
         //---- write in parent-placer pipe ----//
+        buffer[0] = '\0';
         for (i++; i <= lines; i++)
         {
-            p2p = open(parent_placer, O_WRONLY);
-            write(p2p, inputText[i], strlen(inputText[i]) + 1);
-            close(p2p);
+            strcat(buffer, inputText[i]);
         }
+        p2p = open(parent_placer, O_WRONLY);
+        write(p2p, inputText[i], strlen(inputText[i]) + 1);
+        close(p2p);
     }
 }

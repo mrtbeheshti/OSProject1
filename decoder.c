@@ -24,7 +24,7 @@ int main()
         else
             parent_inp[i] += 23;
     }
-
+    printf("encoded string: %s\n", parent_inp);
     //---- create decoder-finder pipe ----//
     mkfifo(decoder_finder, 0666);
     int d2f = open(decoder_finder, O_WRONLY);
